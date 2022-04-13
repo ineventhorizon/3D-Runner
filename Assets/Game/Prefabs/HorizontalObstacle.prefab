@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7941056583315637453}
   - component: {fileID: -7119986590390809470}
   - component: {fileID: -404656139437315588}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: HorizontalObstacle
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -97,6 +97,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveDirection: 0
   moveRange: 1
+  moveSpeed: 1
 --- !u!136 &-404656139437315588
 CapsuleCollider:
   m_ObjectHideFlags: 0

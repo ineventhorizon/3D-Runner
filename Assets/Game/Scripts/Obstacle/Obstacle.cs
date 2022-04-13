@@ -10,5 +10,9 @@ public class Obstacle : MonoBehaviour
         {
             Observer.PlayerObstacleHit?.Invoke();
         }
+        if (other.CompareTag("Opponent"))
+        {
+            other.GetComponent<OpponentAI>().HandleObstacleHit();
+        }
     }
 }
