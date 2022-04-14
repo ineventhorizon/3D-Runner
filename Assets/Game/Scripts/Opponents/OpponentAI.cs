@@ -7,111 +7,91 @@ public class OpponentAI : MonoBehaviour
     [SerializeField] private int numberOfRays = 17;
     [SerializeField] private float angle = 60, rayLength = 1f;
     [SerializeField] private LayerMask obstacleMask;
+    [SerializeField] private Transform sideMovementRoot;
+    [SerializeField] private Rigidbody rb;
+    private float speed;
     private Vector3 oldPos;
-    private Vector3 moveDirection = Vector3.forward;
+    private Vector3 moveDirection = Vector3.zero;
+    private List<bool> hitList;
+    private bool flag = false;
     // Start is called before the first frame update
     void Start()
     {
+        speed = Random.Range(4, 5f);
+        hitList = new List<bool>();
+        for(int i = 0; i < numberOfRays; i++)
+        {
+            hitList.Add(false);
+        }
         oldPos = transform.position;
-        StartCoroutine(RandomDirectionRoutine());
     }
-
+    private void FixedUpdate()
+    {
+    }
     // Update is called once per frame
     void Update()
     {
         MoveCharacter();
     }
-    //Need to add randomness to it's movement
     private void MoveCharacter()
     {
+        flag = true;
+        moveDirection = Vector3.zero;
+        RaycastHit raycastHit;
         var deltaPosition = Vector3.zero;
-        var hit = false;
-        for (int i = 0; i <= numberOfRays; i++)
+        var stuckPos = transform.position;
+
+        for (int i = 0; i < numberOfRays; i++)
         {
-            
+            hitList[i] = false;
             var rotation = this.transform.rotation;
             //When i is 0 new angle will be -angle 
             //When i is numberOfRays-1 new angle will be angle
-            var rotationMod = Quaternion.AngleAxis((i / (float)numberOfRays) * angle * 2 - angle, this.transform.up);
+            var rotationMod = Quaternion.AngleAxis((i / ((float)numberOfRays-1)) * angle * 2 - angle, this.transform.up);
             var direction = rotation * rotationMod * Vector3.forward;
 
             var ray = new Ray(this.transform.position+ transform.up, direction);
-            var value = i%2 == 0 ? 2f : 1f;
-            
-            if (Physics.Raycast(ray, out RaycastHit raycastHit, rayLength*value, obstacleMask))
+            if (Physics.Raycast(ray, out raycastHit, rayLength, obstacleMask))
             {
-                hit = true;
-                Debug.DrawRay(transform.position + transform.up, direction*rayLength*value, Color.red, 0f);
-                if (raycastHit.normal.x < 0)
-                {
-                    //Lean left
-                }
-                else
-                {
-                    //Lean right
-                }
-                deltaPosition -= (1f / numberOfRays) * 5f * direction;
+                hitList[i] = true;
+                Debug.DrawRay(transform.position + transform.up, direction * rayLength, Color.red, 0f);
+                deltaPosition -= (1f / numberOfRays) * direction*5f;
+                
             }
             else
             {
-                Debug.DrawRay(transform.position + transform.up, direction* rayLength*value, Color.green, 0f);
-                deltaPosition += (1f / numberOfRays) * 5f * direction;
+                Debug.DrawRay(transform.position + transform.up, direction * rayLength, Color.green, 0f);
+                deltaPosition += (1f / numberOfRays) * direction*5f;
             }
-
         }
         //TODO
-        Debug.Log($"{deltaPosition}, {gameObject.name}");
-        if (deltaPosition.z >= 0.2)
-        {
+        moveDirection = deltaPosition.normalized;
+        
+        var targetRotation = deltaPosition.x <= -6 || deltaPosition.x >= 6 ? Quaternion.LookRotation(Vector3.forward, Vector3.up) : Quaternion.LookRotation(moveDirection.normalized, Vector3.up);
+        sideMovementRoot.localRotation = Quaternion.Lerp(sideMovementRoot.localRotation, targetRotation, Time.deltaTime * 5f);
+        this.transform.position += moveDirection * speed * Time.deltaTime;
+        var pos = this.transform.position;
+        
+        //pos.x += deltaPosition.x;
+        //pos.x = Mathf.Clamp(pos.x, -6, 6);
+        //this.transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime * 20f);
+        //if (transform.position.x <= -5 || transform.position.x >= 5)
+        //{
+        //    moveDirection.x *= -1;
+        //}
 
-            this.transform.position += deltaPosition*Time.deltaTime;
-           //var pos = this.transform.position;
-           //pos.x += deltaPosition.x;
-           //pos.x = Mathf.Clamp(pos.x, -8, 8);
-           //this.transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime * 20f); ;
+        if (transform.position.x <= -6 || transform.position.x >= 6)
+        {
+            moveDirection = Vector3.zero;
+            HandleObstacleHit();
         }
-        else HandleObstacleHit();
+
 
     }
+
     public void HandleObstacleHit()
     {
-        //Returns player to spawn point which is 0,0,0
+        //Returns player to spawn point which is character's start point
         transform.position = oldPos;
     }
-
-    //TODO
-    private IEnumerator RandomDirectionRoutine()
-    {
-        while (true)
-        {
-            transform.position += new Vector3(Random.Range(-1f, 1f), transform.position.y, Random.Range(0f, 1f)).normalized * Time.deltaTime*5f;
-            yield return new WaitForSeconds(3f);
-
-        }
-    }
-
-    //private void OnDrawGizmos()
-    //{
-    //    
-    //    for (int i = 0; i <= numberOfRays; i++)
-    //    {
-    //        var rotation = this.transform.rotation;
-    //        //When i is 0 new angle will be -angle 
-    //        //When i is numberOfRays-1 new angle will be angle
-    //        var rotationMod = Quaternion.AngleAxis((i / (float)numberOfRays) * angle*2 - angle, this.transform.up);
-    //        var direction = rotation * rotationMod * Vector3.forward;
-    //
-    //        //Debug.Log($"Angle: {(i / (float)numberOfRays) * 60 * 2 - 60} Direction: {direction}");
-    //       //if ((bool)hitArray[i])
-    //       //{
-    //       //    Gizmos.color = Color.red;
-    //       //}
-    //       //else
-    //       //{
-    //       //    Gizmos.color = Color.white;
-    //       //}
-    //        Gizmos.DrawRay(this.transform.position + transform.up, direction);
-    //
-    //    }
-    //}
 }

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1574637384751808931}
   - component: {fileID: 79171857517555060}
   - component: {fileID: 7191780437655711190}
+  - component: {fileID: 6947070321786657057}
   m_Layer: 7
   m_Name: StaticObstacle
   m_TagString: Obstacle
@@ -107,4 +108,18 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.12875415, y: 0.089122504, z: 0.041758485}
+  m_Center: {x: 0, y: -0.0000000018626451, z: 0}
+--- !u!136 &6947070321786657057
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1070379156237262966}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.05
+  m_Height: 0.14
+  m_Direction: 0
   m_Center: {x: 0, y: -0.0000000018626451, z: 0}
