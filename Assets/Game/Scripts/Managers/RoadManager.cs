@@ -20,7 +20,7 @@ public class RoadManager : MonoBehaviour
     [BoxGroup("Parent")]
     [SerializeField] private Transform roadParent;
     
-    //[SerializeField] private FinalRoad finalRoad;
+    [SerializeField] private GameObject finalRoad;
     private Vector3 offSet => roadParent.position;
     private void UpdateRoadFormat()
     {
@@ -87,7 +87,7 @@ public class RoadManager : MonoBehaviour
 
     private void MoveFinal()
     {
-        //finalRoad.transform.position = (roadParent.forward * roadLength) + roads[roads.Count - 1].transform.position;
+        finalRoad.transform.position = (roadParent.forward * roadLength*gapValue) + roads[roads.Count - 1].transform.position;
     }
 #endif
 

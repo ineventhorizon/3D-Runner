@@ -4,15 +4,20 @@ using UnityEngine;
 
 public class FinalGame : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private bool isTriggered = false;
+    private void OnTriggerEnter(Collider other)
     {
-        
-    }
+        if (other.CompareTag("Player"))
+        {
+            if (isTriggered) return;
+            isTriggered = true;
+            Debug.Log("Final");
+            GameManager.Instance.StartFinal();
+        }
+        if (other.CompareTag("Opponent"))
+        {
+            other.gameObject.SetActive(false);
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

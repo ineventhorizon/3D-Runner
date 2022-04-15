@@ -10,8 +10,16 @@ public class GameManager : MonoSingleton<GameManager>
     public void StartGame()
     {
         UIManager.Instance.StartScreen.DisablePanel();
-        //UIManager.Instance.InGameScreen.EnablePanel();
+        Observer.OpponentsAnimState?.Invoke(CharacterAnimState.RUNNING);
+        UIManager.Instance.InGameScreen.EnablePanel();
         CurrentGameState = GameState.GAMEPLAY;
+    }
+
+    public void StartFinal()
+    {
+        CurrentGameState = GameState.FINAL;
+        Observer.OpponentsAnimState?.Invoke(CharacterAnimState.IDLE);
+        //CameraManager.Instance.SwitchCam("FinalCam");
     }
 }
 

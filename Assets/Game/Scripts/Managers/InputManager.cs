@@ -38,16 +38,28 @@ public class InputManager : MonoSingleton<InputManager>
     {
         if (Input.GetMouseButtonDown(0))
         {
+            //Clicked
             mouseClicking = true;
+            previousMousePosition = mousePositionCM;
+            previousRawMousePosition = Input.mousePosition;
         }
         if (Input.GetMouseButton(0))
-        {
-
+        {   
+            //Swirling
+            //RAW MOUSE POS
+            rawMouseInput = (Vector2)Input.mousePosition - previousRawMousePosition;
+            previousRawMousePosition = Input.mousePosition;
+            //CENTIMETER MOUSE POS
+            var newPos = mousePositionCM - previousMousePosition;
+            previousMousePosition = mousePositionCM;
+            mouseInput = newPos;
         }
         if (Input.GetMouseButtonUp(0))
         {
+            //Mouse released
             mouseClicking = false;
-            
+            mouseInput = rawMouseInput = Vector2.zero;
+
         }
     }
 }

@@ -4,17 +4,26 @@ using UnityEngine;
 
 public class OpponentAI : MonoBehaviour
 {
+    
     [SerializeField] private int numberOfRays = 17;
     [SerializeField] private float angle = 60, rayLength = 1f;
     [SerializeField] private LayerMask obstacleMask;
     [SerializeField] private Transform sideMovementRoot;
     [SerializeField] private Rigidbody rb;
+    [SerializeField] private Animator animator;
     private float speed;
     private Vector3 oldPos;
     private Vector3 moveDirection = Vector3.zero;
     private List<bool> hitList;
-    private bool flag = false;
     // Start is called before the first frame update
+    private void OnEnable()
+    {
+        Observer.OpponentsAnimState += UpdateAnimState;
+    }
+    private void OnDisable()
+    {
+        Observer.OpponentsAnimState -= UpdateAnimState;
+    }
     void Start()
     {
         speed = Random.Range(4, 5f);
@@ -25,9 +34,6 @@ public class OpponentAI : MonoBehaviour
         }
         oldPos = transform.position;
     }
-    private void FixedUpdate()
-    {
-    }
     // Update is called once per frame
     void Update()
     {
@@ -36,11 +42,9 @@ public class OpponentAI : MonoBehaviour
     }
     private void MoveCharacter()
     {
-        flag = true;
         moveDirection = Vector3.zero;
         RaycastHit raycastHit;
         var deltaPosition = Vector3.zero;
-        var stuckPos = transform.position;
 
         for (int i = 0; i < numberOfRays; i++)
         {
@@ -71,23 +75,27 @@ public class OpponentAI : MonoBehaviour
         var targetRotation = deltaPosition.x <= -6 || deltaPosition.x >= 6 ? Quaternion.LookRotation(Vector3.forward, Vector3.up) : Quaternion.LookRotation(moveDirection.normalized, Vector3.up);
         sideMovementRoot.localRotation = Quaternion.Lerp(sideMovementRoot.localRotation, targetRotation, Time.deltaTime * 5f);
         this.transform.position += moveDirection * speed * Time.deltaTime;
-        var pos = this.transform.position;
-        
-        //pos.x += deltaPosition.x;
-        //pos.x = Mathf.Clamp(pos.x, -6, 6);
-        //this.transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime * 20f);
-        //if (transform.position.x <= -5 || transform.position.x >= 5)
-        //{
-        //    moveDirection.x *= -1;
-        //}
 
         if (transform.position.x <= -6 || transform.position.x >= 6)
         {
             moveDirection = Vector3.zero;
             HandleObstacleHit();
         }
+    }
 
-
+    private void UpdateAnimState(CharacterAnimState state)
+    {
+        switch (state)
+        {
+            case CharacterAnimState.IDLE:
+                animator.SetBool("Running", false);
+                break;
+            case CharacterAnimState.RUNNING:
+                animator.SetBool("Running", true);
+                break;
+            default:
+                break;
+        }
     }
 
     public void HandleObstacleHit()

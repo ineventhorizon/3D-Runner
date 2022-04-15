@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    //TODO
+    //There are similar functions for player and opponent they can be combined under a base class. 
     [SerializeField] private Camera mainCamReference;
     [SerializeField] private LayerMask platformMask;
     [SerializeField] private Animator animator;
@@ -20,10 +22,12 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         Observer.PlayerObstacleHit += HandleObstacleHit;
+        Observer.OpponentsAnimState += UpdateAnimState;
     }
     private void OnDisable()
     {
         Observer.PlayerObstacleHit -= HandleObstacleHit;
+        Observer.OpponentsAnimState -= UpdateAnimState;
     }
     private void HandleMovement()
     {
@@ -34,11 +38,11 @@ public class PlayerController : MonoBehaviour
         if (InputManager.Instance.MouseClicking)
         {
             RayHitMousePoint();
-            UpdateAnimState(PlayerAnimStates.RUNNING);
+            UpdateAnimState(CharacterAnimState.RUNNING);
         }
         else
         {
-            UpdateAnimState(PlayerAnimStates.IDLE);
+            UpdateAnimState(CharacterAnimState.IDLE);
         }
     }
     //Will move the character towards it's forward vector
@@ -51,8 +55,8 @@ public class PlayerController : MonoBehaviour
             sideMovementRoot.rotation = Quaternion.Slerp(sideMovementRoot.rotation, targetRotation, 20f * Time.deltaTime);
         }
 
-        sideMovementRoot.position += sideMovementRoot.forward * (speed * Time.deltaTime);
-        cameraPosition = sideMovementRoot.position;
+        player.position += (sideMovementRoot.forward) * (speed * Time.deltaTime);
+        cameraPosition = player.position;
         cameraPosition.x = 0;
         cameraFollow.position = cameraPosition;
     }
@@ -71,14 +75,14 @@ public class PlayerController : MonoBehaviour
             MoveCharacter();
         }
     }
-    private void UpdateAnimState(PlayerAnimStates state)
+    private void UpdateAnimState(CharacterAnimState state)
     {
         switch (state)
         {
-            case PlayerAnimStates.IDLE:
+            case CharacterAnimState.IDLE:
                 animator.SetBool("Running", false);
                 break;
-            case PlayerAnimStates.RUNNING:
+            case CharacterAnimState.RUNNING:
                 animator.SetBool("Running", true);
                 break;
             default:
@@ -92,7 +96,7 @@ public class PlayerController : MonoBehaviour
     }
 }
 
-public enum PlayerAnimStates
+public enum CharacterAnimState
 {
     IDLE,
     RUNNING

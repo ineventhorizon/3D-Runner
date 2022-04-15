@@ -10,18 +10,20 @@ public class Pencil : MonoBehaviour
     [SerializeField] private DrawingBoard currentDrawingBoard;
 
     private Color[] colors;
+    private Color[] currentColors;
     private Vector2 touchPos;
+    int count = 0;
     void Start()
     {
         colors = Enumerable.Repeat(Color.red, penSize * penSize).ToArray();
+        currentColors = Enumerable.Repeat(Color.white, penSize * penSize).ToArray();
     }
-
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.Instance.CurrentGameState != GameState.FINAL) return;
         Draw();
     }
-
     private void Draw()
     {
         var ray = mainCamReference.ScreenPointToRay(Input.mousePosition);
@@ -59,9 +61,12 @@ public class Pencil : MonoBehaviour
                 }
 
                 if (x < 0 || x > currentDrawingBoard.TextureSizeX || y < 0 || y > currentDrawingBoard.TextureSizeY) return;
+                currentColors =  currentDrawingBoard.Texture.GetPixels(x, y, drawSizeX, drawSizeY);
+                count += currentColors.Count(o => o != Color.red);
                 currentDrawingBoard.Texture.SetPixels(x, y, drawSizeX, drawSizeY, colors);
-
                 currentDrawingBoard.Texture.Apply();
+
+                //Debug.Log((count*100)/(currentDrawingBoard.TextureSizeX*currentDrawingBoard.TextureSizeX));
             }
             else
             {
