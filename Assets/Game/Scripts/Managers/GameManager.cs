@@ -1,18 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using NaughtyAttributes;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoSingleton<GameManager>
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField, ReadOnly] public GameState CurrentGameState = GameState.MENU;
 
-    // Update is called once per frame
-    void Update()
+    public void StartGame()
     {
-        
+        UIManager.Instance.StartScreen.DisablePanel();
+        //UIManager.Instance.InGameScreen.EnablePanel();
+        CurrentGameState = GameState.GAMEPLAY;
     }
+}
+
+public enum GameState
+{
+    GAMEPLAY = 0,
+    MENU = 1,
+    PAUSED = 2,
+    FINAL = 3
 }

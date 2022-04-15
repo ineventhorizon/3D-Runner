@@ -31,6 +31,7 @@ public class OpponentAI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.Instance.CurrentGameState != GameState.GAMEPLAY) return;
         MoveCharacter();
     }
     private void MoveCharacter()
