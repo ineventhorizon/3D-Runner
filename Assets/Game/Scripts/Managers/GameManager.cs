@@ -27,6 +27,7 @@ public class GameManager : MonoSingleton<GameManager>
     {
         CurrentGameState = GameState.MENU;
         //UIManager.Instance.FailScreen.DisablePanel();
+        UIManager.Instance.InGamePanel.DisablePanel();
         UIManager.Instance.StartPanel.EnablePanel();
         MySceneManager.Instance.RestartActiveScene();
     }

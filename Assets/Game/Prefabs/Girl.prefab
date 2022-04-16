@@ -202,7 +202,6 @@ GameObject:
   - component: {fileID: 3142937824092442300}
   - component: {fileID: 3142937824092442301}
   - component: {fileID: 3142937824092442302}
-  - component: {fileID: -5356343355212050777}
   m_Layer: 8
   m_Name: Girl
   m_TagString: Opponent
@@ -286,6 +285,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 575bc3c2f7cc2944bb152165a7cdab36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 8518005866642198139}
   numberOfRays: 17
   angle: 90
   rayLength: 1
@@ -294,19 +294,6 @@ MonoBehaviour:
     m_Bits: 896
   sideMovementRoot: {fileID: 2836314063511564585}
   rb: {fileID: 3142937824092442300}
-  animator: {fileID: 8518005866642198139}
---- !u!114 &-5356343355212050777
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3142937824092442299}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21bddf27368849a478016a7b9b561c0b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &3710352793141529458
 GameObject:
   m_ObjectHideFlags: 0

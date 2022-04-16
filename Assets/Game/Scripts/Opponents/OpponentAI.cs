@@ -2,28 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OpponentAI : MonoBehaviour
+public class OpponentAI : Character
 {
     
     [SerializeField] private int numberOfRays = 17;
     [SerializeField] private float angle = 60, rayLength = 1f;
     [SerializeField] private LayerMask obstacleMask;
     [SerializeField] private Transform sideMovementRoot;
-    [SerializeField] private Rigidbody rb;
-    [SerializeField] private Animator animator;
     private float speed;
     private Vector3 oldPos;
     private Vector3 moveDirection = Vector3.zero;
     private List<bool> hitList;
     // Start is called before the first frame update
-    private void OnEnable()
-    {
-        Observer.OpponentsAnimState += UpdateAnimState;
-    }
-    private void OnDisable()
-    {
-        Observer.OpponentsAnimState -= UpdateAnimState;
-    }
     void Start()
     {
         speed = Random.Range(4, 5f);
@@ -82,24 +72,9 @@ public class OpponentAI : MonoBehaviour
             HandleObstacleHit();
         }
     }
-
-    private void UpdateAnimState(CharacterAnimState state)
+    public override void HandleObstacleHit()
     {
-        switch (state)
-        {
-            case CharacterAnimState.IDLE:
-                animator.SetBool("Running", false);
-                break;
-            case CharacterAnimState.RUNNING:
-                animator.SetBool("Running", true);
-                break;
-            default:
-                break;
-        }
-    }
-
-    public void HandleObstacleHit()
-    {
+        base.HandleObstacleHit();
         //Returns player to spawn point which is character's start point
         transform.position = oldPos;
     }

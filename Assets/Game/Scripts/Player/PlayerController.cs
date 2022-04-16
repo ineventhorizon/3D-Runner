@@ -2,15 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : Character
 {
-    //TODO
-    //There are similar functions for player and opponent they can be combined under a base class. 
     [SerializeField] private Camera mainCamReference;
     [SerializeField] private LayerMask platformMask;
-    [SerializeField] private Animator animator;
-    [SerializeField] private float speed;
-    [SerializeField] private Transform cameraFollow ,sideMovementRoot, player;
+    [SerializeField] private Transform leftLimit, rightLimit, cameraFollow ,sideMovementRoot;
+    private float leftLimitX => leftLimit.localPosition.x;
+    private float rightLimitX => rightLimit.localPosition.x;
+    private float forwardSpeed => SettingsManager.GameSettings.forwardSpeed;
+    private float sideMovementSensivity => SettingsManager.GameSettings.sideMovementSensivity;
     private Vector3 cameraPosition;
     // Update is called once per frame
     void Update()
@@ -18,26 +18,21 @@ public class PlayerController : MonoBehaviour
         if (GameManager.Instance.CurrentGameState != GameState.GAMEPLAY) return;
         HandleMovement();
     }
-
     private void OnEnable()
     {
         Observer.PlayerObstacleHit += HandleObstacleHit;
-        Observer.OpponentsAnimState += UpdateAnimState;
     }
     private void OnDisable()
     {
         Observer.PlayerObstacleHit -= HandleObstacleHit;
-        Observer.OpponentsAnimState -= UpdateAnimState;
     }
     private void HandleMovement()
     {
-        //TODO XY MOVEMENT
-        //MODULAR FOR CHARACTER AI
-        //TODO RAYCAST CODE NEEDS TO BE MORE ORGANIZED, NEED TO GET MAINCAM REFERENCE   
-        
         if (InputManager.Instance.MouseClicking)
         {
-            RayHitMousePoint();
+            //RayHitMousePoint();
+            HandleForwardMovement();
+            HandleSideMovement();
             UpdateAnimState(CharacterAnimState.RUNNING);
         }
         else
@@ -45,26 +40,35 @@ public class PlayerController : MonoBehaviour
             UpdateAnimState(CharacterAnimState.IDLE);
         }
     }
-    //Will move the character towards it's forward vector
-    private void MoveCharacter(Vector3? direction = null, bool hit = false)
+    //Swerve controls, player will move forward when touching the screen
+    private void HandleForwardMovement()
     {
-        if(direction?.sqrMagnitude > float.Epsilon && hit)
-        {
-            var newPoint = new Vector3((float)(direction?.x), sideMovementRoot.position.y, (float)direction?.z);
-            var targetRotation = Quaternion.LookRotation(newPoint - sideMovementRoot.position, Vector3.up);
-            sideMovementRoot.rotation = Quaternion.Slerp(sideMovementRoot.rotation, targetRotation, 20f * Time.deltaTime);
-        }
-
-        player.position += (sideMovementRoot.forward) * (speed * Time.deltaTime);
-        cameraPosition = player.position;
+        if (GameManager.Instance.CurrentGameState != GameState.GAMEPLAY) return;
+        transform.position += Vector3.forward * (forwardSpeed * Time.deltaTime);
+        cameraPosition = transform.position;
         cameraPosition.x = 0;
         cameraFollow.position = cameraPosition;
     }
+    private void HandleSideMovement()
+    {
+        if (GameManager.Instance.CurrentGameState != GameState.GAMEPLAY) return;
+        var pos = sideMovementRoot.localPosition;
+        pos.x += InputManager.Instance.MouseInput.x * sideMovementSensivity;
+        pos.x = Mathf.Clamp(pos.x, leftLimitX, rightLimitX);
+        sideMovementRoot.localPosition = Vector3.Lerp(sideMovementRoot.localPosition, pos, Time.deltaTime * 20f);
+
+        if (GameManager.Instance.CurrentGameState != GameState.GAMEPLAY) return;
+        var moveDirection = Vector3.forward + InputManager.Instance.RawMouseInput.x * Vector3.right;
+        var targetRotation = pos.x == leftLimitX || pos.x == rightLimitX ? Quaternion.LookRotation(Vector3.forward, Vector3.up) : Quaternion.LookRotation(moveDirection.normalized, Vector3.up);
+        sideMovementRoot.localRotation = Quaternion.Lerp(sideMovementRoot.localRotation, targetRotation, Time.deltaTime * 5f);
+    }
+    //RayHitMousePoint and MoveCharacter are for free movement controls.
+    //Player will move to the direction of the touch input with respect to the player character
     private void RayHitMousePoint()
     {
 
         var ray = mainCamReference.ScreenPointToRay(Input.mousePosition);
-        if(Physics.Raycast(ray, out RaycastHit raycastHit, Mathf.Infinity, platformMask))
+        if (Physics.Raycast(ray, out RaycastHit raycastHit, Mathf.Infinity, platformMask))
         {
             //Debug.Log("Hit");
             MoveCharacter(raycastHit.point, true);
@@ -75,29 +79,26 @@ public class PlayerController : MonoBehaviour
             MoveCharacter();
         }
     }
-    private void UpdateAnimState(CharacterAnimState state)
+    private void MoveCharacter(Vector3? direction = null, bool hit = false)
     {
-        switch (state)
+        if(direction?.sqrMagnitude > float.Epsilon && hit)
         {
-            case CharacterAnimState.IDLE:
-                animator.SetBool("Running", false);
-                break;
-            case CharacterAnimState.RUNNING:
-                animator.SetBool("Running", true);
-                break;
-            default:
-                break;
+            var newPoint = new Vector3((float)(direction?.x), sideMovementRoot.position.y, (float)direction?.z);
+            var targetRotation = Quaternion.LookRotation(newPoint - sideMovementRoot.position, Vector3.up);
+            sideMovementRoot.rotation = Quaternion.Slerp(sideMovementRoot.rotation, targetRotation, 20f * Time.deltaTime);
         }
+
+        transform.position += (sideMovementRoot.forward) * (forwardSpeed * Time.deltaTime);
+        cameraPosition = transform.position;
+        cameraPosition.x = 0;
+        cameraFollow.position = cameraPosition;
     }
-    private void HandleObstacleHit()
+    public override void HandleObstacleHit()
     {
+        base.HandleObstacleHit();
         //Restarts the game
         GameManager.Instance.RestartGame();
     }
 }
 
-public enum CharacterAnimState
-{
-    IDLE,
-    RUNNING
-}
+

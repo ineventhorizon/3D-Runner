@@ -7,6 +7,7 @@ public class StartPanel : UIBase
     
     public void StartGame()
     {
+        Debug.Log("Button pressed, Starting game");
         GameManager.Instance.StartGame();
     }
 }
