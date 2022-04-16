@@ -24,6 +24,6 @@ public class RankingManager : MonoSingleton<RankingManager>
     {
         ranking = characters.OrderByDescending(o => o.transform.position.z).ToList();
         rankingOfPlayer = ranking.FindIndex(o=> o.transform.CompareTag("Player"));
-        UIManager.Instance.InGameScreen.UpdateRankText(rankingOfPlayer+1);
+        UIManager.Instance.InGamePanel.UpdateRankText(rankingOfPlayer+1);
     }
 }

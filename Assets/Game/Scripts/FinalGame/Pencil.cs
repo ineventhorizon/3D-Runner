@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Pencil : MonoBehaviour
 {
-    [SerializeField] private Camera mainCamReference;
+    [SerializeReference] private Camera mainCamReference;
     [SerializeField] private int penSize;
     [SerializeField] private DrawingBoard currentDrawingBoard;
 
@@ -15,6 +15,7 @@ public class Pencil : MonoBehaviour
     int count = 0;
     void Start()
     {
+        
         colors = Enumerable.Repeat(Color.red, penSize * penSize).ToArray();
         currentColors = Enumerable.Repeat(Color.white, penSize * penSize).ToArray();
     }
@@ -27,6 +28,7 @@ public class Pencil : MonoBehaviour
     private void Draw()
     {
         var ray = mainCamReference.ScreenPointToRay(Input.mousePosition);
+        Debug.DrawRay(mainCamReference.transform.position , ray.direction*30f, Color.green, 0f);
         if (Physics.Raycast(ray, out RaycastHit raycastHit, Mathf.Infinity))
         {
             if (raycastHit.transform.CompareTag("DrawingBoard"))
@@ -63,6 +65,7 @@ public class Pencil : MonoBehaviour
                 if (x < 0 || x > currentDrawingBoard.TextureSizeX || y < 0 || y > currentDrawingBoard.TextureSizeY) return;
                 currentColors =  currentDrawingBoard.Texture.GetPixels(x, y, drawSizeX, drawSizeY);
                 count += currentColors.Count(o => o != Color.red);
+                UIManager.Instance.FinalPanel.UpdatePaintProgress((int)((count * 100) / (currentDrawingBoard.TextureSizeX * currentDrawingBoard.TextureSizeX)));
                 currentDrawingBoard.Texture.SetPixels(x, y, drawSizeX, drawSizeY, colors);
                 currentDrawingBoard.Texture.Apply();
 

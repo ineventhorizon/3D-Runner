@@ -91,8 +91,8 @@ public class PlayerController : MonoBehaviour
     }
     private void HandleObstacleHit()
     {
-        //Returns player to spawn point which is 0,0,0
-        sideMovementRoot.position = cameraFollow.position = Vector3.zero;
+        //Restarts the game
+        GameManager.Instance.RestartGame();
     }
 }
 
