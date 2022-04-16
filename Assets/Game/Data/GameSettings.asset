@@ -14,4 +14,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   forwardSpeed: 5
   sideMovementSensivity: 10
-  finalSpeed: 3

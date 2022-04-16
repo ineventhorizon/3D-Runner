@@ -5,6 +5,8 @@ using UnityEngine;
 public class Character : MonoBehaviour
 {
     [SerializeField] private Animator animator;
+    [SerializeField] private Rigidbody rb;
+    //public Vector3 MoveDirection;
 
     private void OnEnable()
     {
@@ -27,6 +29,15 @@ public class Character : MonoBehaviour
             default:
                 break;
         }
+    }
+    public virtual void EnableRigidbody()
+    {
+        rb.isKinematic = false;
+    }
+
+    public virtual void DisableRigidbody()
+    {
+        rb.isKinematic = true;
     }
     public virtual void HandleObstacleHit()
     {
