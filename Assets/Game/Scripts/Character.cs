@@ -5,8 +5,8 @@ using UnityEngine;
 public class Character : MonoBehaviour
 {
     [SerializeField] private Animator animator;
-    [SerializeField] private Rigidbody rb;
-    //public Vector3 MoveDirection;
+    [SerializeField] protected Rigidbody rb;
+    public Vector3 MoveDirection;
 
     private void OnEnable()
     {
