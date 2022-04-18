@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class HorizontalObstacle : Obstacle
 {
@@ -9,52 +10,31 @@ public class HorizontalObstacle : Obstacle
         XAxis,
         YAxis
     }
-
-    //TODO Need to set first direction, left or right or up and down
-
     [SerializeField] private MoveDirection moveDirection;
-    [SerializeField] private float moveRange = 1, moveSpeed = 1f;
+    [SerializeField] private float moveRange = 1, moveTime = 1f;
+    private Tween obstacleTween;
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(MoveBetweenRoutine());
-    }
-    private void OnDestroy()
-    {
-        StopCoroutine(MoveBetweenRoutine());
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    private IEnumerator MoveBetweenRoutine()
-    {
-        var direction = Vector3.zero;
-        if (moveDirection == MoveDirection.XAxis) direction.x = 1*moveRange;
-        else direction.z = 1*moveRange;
-        while (true)
+        switch (moveDirection)
         {
-            direction *= -1;
-            yield return StartCoroutine(MoveToRoutine(direction));
+            case MoveDirection.XAxis:
+                obstacleTween = transform.DOMove(Vector3.right * moveRange, moveTime)
+            .SetLoops(-1, LoopType.Yoyo)
+            .SetRelative();
+                break;
+            case MoveDirection.YAxis:
+                obstacleTween = transform.DOMove(Vector3.forward * moveRange, moveTime)
+            .SetLoops(-1, LoopType.Yoyo)
+            .SetRelative();
+                break;
+            default:
+                break;
         }
     }
-
-
-    private IEnumerator MoveToRoutine(Vector3 direction)
+    private void OnDisable()
     {
-        var newPos = this.transform.position - direction;
-        while (true)
-        {
-            
-            this.transform.position = Vector3.MoveTowards(this.transform.position, newPos, Time.deltaTime * moveSpeed);
-            var distanceLeft = (transform.position - newPos).sqrMagnitude;
-            if (distanceLeft < 0.001f * 0.001f) break;
-
-            yield return null;
-        }
+        DOTween.Kill(obstacleTween);
     }
 }
 

@@ -5,6 +5,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "GameSettings", menuName = "ScriptableObjects/GameSettings", order = 1)]
 public class GameSettings : ScriptableObject
 {
-    public float forwardSpeed;
-    public float sideMovementSensivity;
+    public float ForwardSpeed;
+    public float SideMovementSensivity;
+
+    public float OpponentSpeed;
+    public float OpponentLeftLimit, OpponentRightLimit;
+
 }

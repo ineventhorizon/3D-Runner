@@ -10,7 +10,7 @@ public class GameManager : MonoSingleton<GameManager>
     public void StartGame()
     {
         UIManager.Instance.StartPanel.DisablePanel();
-        Observer.OpponentsAnimState?.Invoke(CharacterAnimState.RUNNING);
+        Observer.CharactersAnimState?.Invoke(CharacterAnimState.RUNNING);
         UIManager.Instance.InGamePanel.EnablePanel();
         CurrentGameState = GameState.GAMEPLAY;
     }
@@ -18,7 +18,7 @@ public class GameManager : MonoSingleton<GameManager>
     public void StartFinal()
     {
         CurrentGameState = GameState.FINAL;
-        Observer.OpponentsAnimState?.Invoke(CharacterAnimState.IDLE);
+        Observer.CharactersAnimState?.Invoke(CharacterAnimState.IDLE);
         UIManager.Instance.InGamePanel.DisablePanel();
         UIManager.Instance.FinalPanel.EnablePanel();
         CameraManager.Instance.SwitchCam("FinalCam");
@@ -30,6 +30,14 @@ public class GameManager : MonoSingleton<GameManager>
         UIManager.Instance.InGamePanel.DisablePanel();
         UIManager.Instance.StartPanel.EnablePanel();
         MySceneManager.Instance.RestartActiveScene();
+    }
+    public void NextLevel()
+    {
+        CurrentGameState = GameState.MENU;
+        UIManager.Instance.FinalPanel.DisablePanel();
+        UIManager.Instance.WinPanel.DisablePanel();
+        UIManager.Instance.StartPanel.EnablePanel();
+        MySceneManager.Instance.LoadNextLevel();
     }
 }
 

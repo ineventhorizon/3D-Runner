@@ -12,10 +12,11 @@ public class Pencil : MonoBehaviour
     private Color[] colors;
     private Color[] currentColors;
     private Vector2 touchPos;
+    private bool winTrigger = false;
     int count = 0;
+    int percentage = 0;
     void Start()
     {
-        
         colors = Enumerable.Repeat(Color.red, penSize * penSize).ToArray();
         currentColors = Enumerable.Repeat(Color.white, penSize * penSize).ToArray();
     }
@@ -65,9 +66,16 @@ public class Pencil : MonoBehaviour
                 if (x < 0 || x > currentDrawingBoard.TextureSizeX || y < 0 || y > currentDrawingBoard.TextureSizeY) return;
                 currentColors =  currentDrawingBoard.Texture.GetPixels(x, y, drawSizeX, drawSizeY);
                 count += currentColors.Count(o => o != Color.red);
-                UIManager.Instance.FinalPanel.UpdatePaintProgress((int)((count * 100) / (currentDrawingBoard.TextureSizeX * currentDrawingBoard.TextureSizeX)));
+                percentage = (int)((count * 100) / (currentDrawingBoard.TextureSizeX * currentDrawingBoard.TextureSizeX));
+                UIManager.Instance.FinalPanel.UpdatePaintProgress(percentage);
                 currentDrawingBoard.Texture.SetPixels(x, y, drawSizeX, drawSizeY, colors);
                 currentDrawingBoard.Texture.Apply();
+
+                if (percentage >= 70 && !winTrigger)
+                {
+                    UIManager.Instance.WinPanel.EnablePanel();
+                    winTrigger = true;
+                }
 
                 //Debug.Log((count*100)/(currentDrawingBoard.TextureSizeX*currentDrawingBoard.TextureSizeX));
             }

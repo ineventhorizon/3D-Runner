@@ -4,15 +4,8 @@ using UnityEngine;
 
 public class WinPanel : UIBase
 {
-    // Start is called before the first frame update
-    void Start()
+    public void NextLevel()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        GameManager.Instance.NextLevel();
     }
 }

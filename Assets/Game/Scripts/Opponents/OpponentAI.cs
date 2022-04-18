@@ -1,38 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class OpponentAI : Character
 {
-    
     [SerializeField] private int numberOfRays = 17;
     [SerializeField] private float angle = 60, rayLength = 1f;
     [SerializeField] private LayerMask obstacleMask;
     [SerializeField] private Transform sideMovementRoot;
-    private float speed;
-    private Vector3 oldPos;
+    private float speed => SettingsManager.GameSettings.OpponentSpeed;
+    private float leftLimit => SettingsManager.GameSettings.OpponentLeftLimit;
+    private float rightLimit => SettingsManager.GameSettings.OpponentRightLimit;
     private Vector3 moveDirection = Vector3.zero;
     private List<bool> hitList;
     // Start is called before the first frame update
     void Start()
     {
-        speed = Random.Range(4, 5f);
-        hitList = new List<bool>();
-        for(int i = 0; i < numberOfRays; i++)
-        {
-            hitList.Add(false);
-        }
-        oldPos = transform.position;
+        hitList = Enumerable.Repeat(false, numberOfRays).ToList();
     }
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        if (GameManager.Instance.CurrentGameState != GameState.GAMEPLAY) return;
+        if (GameManager.Instance.CurrentGameState != GameState.GAMEPLAY)
+        {
+            this.rb.velocity = MoveDirection;
+            return;
+        }
         MoveCharacter();
     }
     private void MoveCharacter()
     {
-        moveDirection = Vector3.zero;
+        moveDirection = this.MoveDirection;
         RaycastHit raycastHit;
         var deltaPosition = Vector3.zero;
 
@@ -50,23 +49,23 @@ public class OpponentAI : Character
             {
                 hitList[i] = true;
                 Debug.DrawRay(transform.position + transform.up, direction * rayLength, Color.red, 0f);
-                deltaPosition -= (1f / numberOfRays) * direction*5f;
+                deltaPosition -= (1f / numberOfRays) * direction;
                 
             }
             else
             {
                 Debug.DrawRay(transform.position + transform.up, direction * rayLength, Color.green, 0f);
-                deltaPosition += (1f / numberOfRays) * direction*5f;
+                deltaPosition += (1f / numberOfRays) * direction;
             }
         }
         //TODO
-        moveDirection = deltaPosition.normalized;
+        moveDirection += deltaPosition.normalized;
         
-        var targetRotation = deltaPosition.x <= -6 || deltaPosition.x >= 6 ? Quaternion.LookRotation(Vector3.forward, Vector3.up) : Quaternion.LookRotation(moveDirection.normalized, Vector3.up);
-        sideMovementRoot.localRotation = Quaternion.Lerp(sideMovementRoot.localRotation, targetRotation, Time.deltaTime * 5f);
-        this.transform.position += moveDirection * speed * Time.deltaTime;
+        var targetRotation = deltaPosition.x <= leftLimit || deltaPosition.x >= rightLimit ? Quaternion.LookRotation(Vector3.forward, Vector3.up) : Quaternion.LookRotation(moveDirection.normalized, Vector3.up);
+        sideMovementRoot.localRotation = Quaternion.Lerp(sideMovementRoot.localRotation, targetRotation, Time.fixedDeltaTime * 5f);
+        this.rb.velocity = moveDirection * speed * Time.fixedDeltaTime;
 
-        if (transform.position.x <= -6 || transform.position.x >= 6)
+        if (this.rb.position.x <= leftLimit || this.rb.position.x >= rightLimit)
         {
             moveDirection = Vector3.zero;
             HandleObstacleHit();
@@ -74,8 +73,7 @@ public class OpponentAI : Character
     }
     public override void HandleObstacleHit()
     {
-        base.HandleObstacleHit();
-        //Returns player to spawn point which is character's start point
-        transform.position = oldPos;
+        //Returns character to random spawn point
+        transform.position = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-8f, -3f));
     }
 }

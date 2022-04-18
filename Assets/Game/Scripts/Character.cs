@@ -7,14 +7,15 @@ public class Character : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] protected Rigidbody rb;
     public Vector3 MoveDirection;
+    private bool triggered = false;
 
     private void OnEnable()
     {
-        Observer.OpponentsAnimState += UpdateAnimState;
+        Observer.CharactersAnimState += UpdateAnimState;
     }
     private void OnDisable()
     {
-        Observer.OpponentsAnimState -= UpdateAnimState;
+        Observer.CharactersAnimState -= UpdateAnimState;
     }
     protected void UpdateAnimState(CharacterAnimState state)
     {
@@ -30,17 +31,10 @@ public class Character : MonoBehaviour
                 break;
         }
     }
-    public virtual void EnableRigidbody()
-    {
-        rb.isKinematic = false;
-    }
-
-    public virtual void DisableRigidbody()
-    {
-        rb.isKinematic = true;
-    }
     public virtual void HandleObstacleHit()
     {
+        if (triggered) return;
+        triggered = true;
         //Handles when characters hits to obstacle
     }
 }

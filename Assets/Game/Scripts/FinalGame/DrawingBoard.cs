@@ -14,12 +14,5 @@ public class DrawingBoard : MonoBehaviour
         var r = GetComponent<Renderer>();
         Texture = new Texture2D((int)textureSize.x, (int)textureSize.y);
         r.material.mainTexture = Texture;
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    }   
 }

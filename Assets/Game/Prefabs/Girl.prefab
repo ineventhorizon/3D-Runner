@@ -255,9 +255,9 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 0
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 116
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!136 &3142937824092442301
 CapsuleCollider:
@@ -286,6 +286,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 8518005866642198139}
+  rb: {fileID: 3142937824092442300}
+  MoveDirection: {x: 0, y: 0, z: 0}
   numberOfRays: 17
   angle: 90
   rayLength: 1
@@ -293,7 +295,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 896
   sideMovementRoot: {fileID: 2836314063511564585}
-  rb: {fileID: 3142937824092442300}
 --- !u!1 &3710352793141529458
 GameObject:
   m_ObjectHideFlags: 0

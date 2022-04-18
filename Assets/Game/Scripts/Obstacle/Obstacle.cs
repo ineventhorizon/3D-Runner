@@ -6,13 +6,9 @@ public class Obstacle : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") || other.CompareTag("Opponent"))
         {
-            Observer.PlayerObstacleHit?.Invoke();
-        }
-        if (other.CompareTag("Opponent"))
-        {
-            other.GetComponent<OpponentAI>().HandleObstacleHit();
+            other.attachedRigidbody.GetComponent<Character>().HandleObstacleHit();
         }
     }
 }
